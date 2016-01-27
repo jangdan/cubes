@@ -1,51 +1,75 @@
-var CAMERA_DISTANCE = Math.sqrt(625);
+//1 unit = 1 cm
+
+var G = 6.67408 * Math.pow(10, 1);
+
+
+
+var CAMERA_DISTANCE = 25;
 
 var CAMERA_MINIMUM_ZOOM = 1;
-var CAMERA_MAXIMUM_ZOOM = 10;
-
-var MAXIMUM_DISTANCE_FROM_CENTER = CAMERA_DISTANCE - 1;
+var CAMERA_MAXIMUM_ZOOM = 100;
 
 
+var CUBE_COUNT = 30;
 
-var scene = new THREE.Scene();
+var MAXIMUM_DISTANCE_FROM_CENTER = 100;
 
 
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*CAMERA_DISTANCE);
+
+var scene = new Physijs.Scene( { reportsize: CUBE_COUNT } );
+scene.setGravity(new THREE.Vector3(0, 0, 0));
+
+scene.addEventListener("update", update);
+
+
+
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*MAXIMUM_DISTANCE_FROM_CENTER);
 //camera = new THREE.OrthographicCamera( window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, 0.1, 1000 );
-var cameraactualzoom = camera.zoom;
-//scene.add(camera);
 
-var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: false } );
+var cameraactualzoom = camera.zoom;
+
+var cameraactualrotation = new THREE.Vector3();
+cameraactualrotation.copy(camera.rotation);
+
+
+
+var renderer = new THREE.WebGLRenderer( { antialias: false, alpha: false } );
 
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x000000, 1);
+renderer.setClearColor(0xFFFFFF, 1);
 renderer.shadowMap.enabled = true;
-renderer.shadowMapSoft = true;
+//renderer.shadowMapSoft = true;
 
 document.body.appendChild(renderer.domElement);
 
 
 
-var geometry = new THREE.BoxGeometry(1, 1, 1);
+var cubes = [];
 
 
-for(i = 0; i < 150; ++i){
+for(i = 0; i < CUBE_COUNT; ++i){
+
+	var s = 1;
+	var geometry = new THREE.BoxGeometry(s, s, s);
 
 	var material = new THREE.MeshPhongMaterial( { color: 0xFFFFFF*Math.random() } );
 
-	var cube = new THREE.Mesh(geometry, material);
+	var cube = new Physijs.BoxMesh(geometry, material, geometry.parameters.width * geometry.parameters.height * geometry.parameters.depth); //
 
 	cube.castShadow = true;
 	cube.receiveShadow = true;
 
 	cube.position.set(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
-	cube.position.multiplyScalar(Math.sqrt(Math.random()) *MAXIMUM_DISTANCE_FROM_CENTER);
+	cube.position.multiplyScalar(Math.pow(Math.random(), 1.5) * MAXIMUM_DISTANCE_FROM_CENTER);
 
 	cube.rotation.x = Math.random(2*Math.PI);
 	cube.rotation.y = Math.random(2*Math.PI);
 	cube.rotation.z = Math.random(2*Math.PI);
 
+	cube.matrixAutoUpdate = false;
+
 	scene.add(cube);
+	cubes.push(cube);
 
 }
 
@@ -60,8 +84,8 @@ lamplight.castShadow = true;
 lamplight.shadowCameraNear = CAMERA_DISTANCE - 1;
 lamplight.shadowCameraFar = 2*CAMERA_DISTANCE;
 
-lamplight.shadowMapWidth = 4096;
-lamplight.shadowMapHeight = 4096;
+lamplight.shadowMapWidth = 256;
+lamplight.shadowMapHeight = 256;
 
 
 scene.add(lamplight);
@@ -81,22 +105,61 @@ camera.position.z = CAMERA_DISTANCE;
 
 
 
-function render(){
+function render(){ //three.js
 
 	requestAnimationFrame(render);
 
-	scene.rotation.y += 0.005;
+	//scene.rotation.y += 0.005;
+
 
 	camera.zoom += (cameraactualzoom - camera.zoom) * 0.1;
+
+	camera.rotation.x += (cameraactualrotation.x - camera.rotation.x) * 0.01;
+	camera.rotation.y += (cameraactualrotation.y - camera.rotation.y) * 0.01;
+
 	camera.updateProjectionMatrix();
+
 
 	renderer.render(scene, camera);
 
 }
 
-
-
 render();
+
+
+
+function update(){
+
+	scene.simulate(undefined, 1);
+
+
+	for(i = 0; i < cubes.length; ++i){
+
+		var iposition = cubes[i].position;
+		var Gimass = G*cubes[i].mass;
+
+		for(j = i+1; j < cubes.length; ++j){
+
+			var f = new THREE.Vector3();
+			f.subVectors(iposition, cubes[j].position);
+			f.multiplyScalar(Gimass*cubes[j].mass/f.lengthSq());
+
+			cubes[j].applyCentralForce(f);
+
+			f.negate();
+			cubes[i].applyCentralForce(f);
+
+			//console.log(cubes[i].position.x, cubes[j].position.x);
+
+		}
+
+		cubes[i].updateMatrix();
+
+	}
+
+}
+
+update();
 
 
 
@@ -109,6 +172,17 @@ function resize(e){
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
+}
+
+
+
+window.addEventListener("mousemove", mousemove, false);
+
+function mousemove(e){
+
+	cameraactualrotation.y = -((e.clientX)/window.innerWidth - 0.5)*2*Math.PI;
+	cameraactualrotation.x = -((e.clientY)/window.innerHeight - 0.5)*Math.PI;
+	
 }
 
 
