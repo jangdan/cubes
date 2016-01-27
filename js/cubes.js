@@ -10,7 +10,7 @@ var CAMERA_MINIMUM_ZOOM = 1;
 var CAMERA_MAXIMUM_ZOOM = 100;
 
 
-var CUBE_COUNT = 40;
+var CUBE_COUNT = 30;
 
 var MAXIMUM_DISTANCE_FROM_CENTER = 100;
 
@@ -23,7 +23,7 @@ scene.addEventListener("update", update);
 
 
 
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*CAMERA_DISTANCE);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*MAXIMUM_DISTANCE_FROM_CENTER);
 //camera = new THREE.OrthographicCamera( window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, 0.1, 1000 );
 
 var cameraactualzoom = camera.zoom;
@@ -33,12 +33,12 @@ cameraactualrotation.copy(camera.rotation);
 
 
 
-var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: false } );
+var renderer = new THREE.WebGLRenderer( { antialias: false, alpha: false } );
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xFFFFFF, 1);
 renderer.shadowMap.enabled = true;
-renderer.shadowMapSoft = true;
+//renderer.shadowMapSoft = true;
 
 document.body.appendChild(renderer.domElement);
 
@@ -84,8 +84,8 @@ lamplight.castShadow = true;
 lamplight.shadowCameraNear = CAMERA_DISTANCE - 1;
 lamplight.shadowCameraFar = 2*CAMERA_DISTANCE;
 
-lamplight.shadowMapWidth = 512;
-lamplight.shadowMapHeight = 512;
+lamplight.shadowMapWidth = 256;
+lamplight.shadowMapHeight = 256;
 
 
 scene.add(lamplight);
