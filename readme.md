@@ -1,2 +1,2 @@
 #cubes
-an n-body simulation with cubes
+a 3D n-body simulation with colorful cubes
