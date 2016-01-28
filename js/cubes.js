@@ -1,6 +1,6 @@
 //1 unit = 1 cm
 
-var G = 6.67408 * Math.pow(10, 1);
+var G = 6.67408e1;
 
 
 
