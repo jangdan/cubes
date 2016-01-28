@@ -109,8 +109,6 @@ function render(){ //three.js
 
 	requestAnimationFrame(render);
 
-	//scene.rotation.y += 0.005;
-
 
 	camera.zoom += (cameraactualzoom - camera.zoom) * 0.1;
 
