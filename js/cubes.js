@@ -4,32 +4,39 @@ var G = 6.67408e1;
 
 
 
+
+
 var CAMERA_DISTANCE = 25;
 
 var CAMERA_MINIMUM_ZOOM = 1;
 var CAMERA_MAXIMUM_ZOOM = 100;
 
 
-var CUBE_COUNT = 30;
+var CUBE_COUNT = 40;
 
 var MAXIMUM_DISTANCE_FROM_CENTER = 100;
 
 
 
+
 var scene = new Physijs.Scene( { reportsize: CUBE_COUNT } );
+
 scene.setGravity(new THREE.Vector3(0, 0, 0));
+
 
 scene.addEventListener("update", update);
 
 
 
+
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*MAXIMUM_DISTANCE_FROM_CENTER);
-//camera = new THREE.OrthographicCamera( window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, 0.1, 1000 );
+
 
 var cameraactualzoom = camera.zoom;
 
 var cameraactualrotation = new THREE.Vector3();
 cameraactualrotation.copy(camera.rotation);
+
 
 
 
@@ -40,24 +47,31 @@ renderer.setClearColor(0xFFFFFF, 1);
 renderer.shadowMap.enabled = true;
 //renderer.shadowMapSoft = true;
 
+
 document.body.appendChild(renderer.domElement);
+
+
 
 
 
 var cubes = [];
 
 
+
+var s = 0.5;
+
 for(i = 0; i < CUBE_COUNT; ++i){
 
-	var s = 1;
 	var geometry = new THREE.BoxGeometry(s, s, s);
 
 	var material = new THREE.MeshPhongMaterial( { color: 0xFFFFFF*Math.random() } );
 
-	var cube = new Physijs.BoxMesh(geometry, material, geometry.parameters.width * geometry.parameters.height * geometry.parameters.depth); //
+	var cube = new Physijs.BoxMesh(geometry, material); //
+
 
 	cube.castShadow = true;
 	cube.receiveShadow = true;
+
 
 	cube.position.set(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
 	cube.position.multiplyScalar(Math.pow(Math.random(), 1.5) * MAXIMUM_DISTANCE_FROM_CENTER);
@@ -66,12 +80,16 @@ for(i = 0; i < CUBE_COUNT; ++i){
 	cube.rotation.y = Math.random(2*Math.PI);
 	cube.rotation.z = Math.random(2*Math.PI);
 
+
 	cube.matrixAutoUpdate = false;
 
+
 	scene.add(cube);
+
 	cubes.push(cube);
 
 }
+
 
 
 
@@ -95,13 +113,16 @@ scene.add(lamplight);
 //scene.add(new THREE.CameraHelper(lamplight.shadow));
 
 
+
 var hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0xFFFFFF, 0.5);
 scene.add(hemisphereLight);
 
 
 
 
+
 camera.position.z = CAMERA_DISTANCE;
+
 
 
 
@@ -123,6 +144,7 @@ function render(){ //three.js
 }
 
 render();
+
 
 
 
@@ -161,6 +183,8 @@ update();
 
 
 
+
+
 window.addEventListener("resize", resize, false);
 
 function resize(e){
@@ -189,7 +213,7 @@ window.addEventListener("mousewheel", mousewheel, false);
 
 function mousewheel(e){
 
-	cameraactualzoom += (e.wheelDelta || e.detail) * 0.005;
+	cameraactualzoom += (e.wheelDelta || e.detail)*0.005;
 	if(cameraactualzoom < CAMERA_MINIMUM_ZOOM) cameraactualzoom = CAMERA_MINIMUM_ZOOM;
 	else if(cameraactualzoom > CAMERA_MAXIMUM_ZOOM) cameraactualzoom = CAMERA_MAXIMUM_ZOOM;
 
