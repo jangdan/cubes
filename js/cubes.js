@@ -148,7 +148,7 @@ render();
 
 
 
-function update(){
+function update(){ //physijs
 
 	scene.simulate(undefined, 1);
 
@@ -168,8 +168,6 @@ function update(){
 
 			f.negate();
 			cubes[i].applyCentralForce(f);
-
-			//console.log(cubes[i].position.x, cubes[j].position.x);
 
 		}
 
