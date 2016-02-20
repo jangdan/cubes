@@ -31,6 +31,8 @@ scene.addEventListener("update", update);
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*MAXIMUM_DISTANCE_FROM_CENTER);
 
+camera.rotation.order = "YXZ";
+
 
 var intendedcamera = {
 
