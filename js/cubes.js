@@ -31,11 +31,17 @@ scene.addEventListener("update", update);
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*MAXIMUM_DISTANCE_FROM_CENTER);
 
+camera.rotation.order = "YXZ";
 
-var cameraactualzoom = camera.zoom;
 
-var cameraactualrotation = new THREE.Vector3();
-cameraactualrotation.copy(camera.rotation);
+var intendedcamera = {
+
+	zoom: camera.zoom,
+	rotation: new THREE.Vector3()
+
+}
+
+intendedcamera.rotation.copy(camera.rotation);
 
 
 
@@ -131,12 +137,19 @@ function render(){ //three.js
 	requestAnimationFrame(render);
 
 
-	camera.zoom += (cameraactualzoom - camera.zoom) * 0.1;
 
-	camera.rotation.x += (cameraactualrotation.x - camera.rotation.x) * 0.01;
-	camera.rotation.y += (cameraactualrotation.y - camera.rotation.y) * 0.01;
+	camera.zoom += (intendedcamera.zoom - camera.zoom) * 0.1;
+
+
+	camera.rotation.x += (intendedcamera.rotation.x - camera.rotation.x) * 0.01;
+	camera.rotation.y += (intendedcamera.rotation.y - camera.rotation.y) * 0.01;
+
+
+
+
 
 	camera.updateProjectionMatrix();
+
 
 
 	renderer.render(scene, camera);
@@ -148,7 +161,7 @@ render();
 
 
 
-function update(){
+function update(){ //physijs
 
 	scene.simulate(undefined, 1);
 
@@ -169,8 +182,6 @@ function update(){
 			f.negate();
 			cubes[i].applyCentralForce(f);
 
-			//console.log(cubes[i].position.x, cubes[j].position.x);
-
 		}
 
 		cubes[i].updateMatrix();
@@ -185,38 +196,38 @@ update();
 
 
 
-window.addEventListener("resize", resize, false);
-
-function resize(e){
+window.addEventListener("resize", function(e){
 
 	camera.aspect = window.innerWidth/window.innerHeight;
 	camera.updateProjectionMatrix();
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
-}
+}, false);
 
 
 
-window.addEventListener("mousemove", mousemove, false);
 
-function mousemove(e){
 
-	cameraactualrotation.y = -((e.clientX)/window.innerWidth - 0.5)*2*Math.PI;
-	cameraactualrotation.x = -((e.clientY)/window.innerHeight - 0.5)*Math.PI;
+window.addEventListener("mousemove", function(e){
+
+	intendedcamera.rotation.x = (window.innerHeight/2 - e.clientY)*0.005;
+	intendedcamera.rotation.y = (window.innerWidth/2 - e.clientX)*0.005;
 	
-}
+}, false);
 
 
 
-window.addEventListener("mousewheel", mousewheel, false);
 
-function mousewheel(e){
 
-	cameraactualzoom += (e.wheelDelta || e.detail)*0.005;
-	if(cameraactualzoom < CAMERA_MINIMUM_ZOOM) cameraactualzoom = CAMERA_MINIMUM_ZOOM;
-	else if(cameraactualzoom > CAMERA_MAXIMUM_ZOOM) cameraactualzoom = CAMERA_MAXIMUM_ZOOM;
+window.addEventListener("mousewheel", function(e){
+
+	intendedcamera.zoom += (e.wheelDelta || e.detail)*0.005;
+
+	if(intendedcamera.zoom < CAMERA_MINIMUM_ZOOM) intendedcamera.zoom = CAMERA_MINIMUM_ZOOM;
+	else if(intendedcamera.zoom > CAMERA_MAXIMUM_ZOOM) intendedcamera.zoom = CAMERA_MAXIMUM_ZOOM;
+
 
 	return false;
 
-}
+}, false);
