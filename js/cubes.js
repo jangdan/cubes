@@ -185,33 +185,31 @@ update();
 
 
 
-window.addEventListener("resize", resize, false);
-
-function resize(e){
+window.addEventListener("resize", function(e){
 
 	camera.aspect = window.innerWidth/window.innerHeight;
 	camera.updateProjectionMatrix();
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
-}
+}, false);
 
 
 
-window.addEventListener("mousemove", mousemove, false);
 
-function mousemove(e){
+
+window.addEventListener("mousemove", function(e){
 
 	cameraactualrotation.y = -((e.clientX)/window.innerWidth - 0.5)*2*Math.PI;
 	cameraactualrotation.x = -((e.clientY)/window.innerHeight - 0.5)*Math.PI;
 	
-}
+}, false);
 
 
 
-window.addEventListener("mousewheel", mousewheel, false);
 
-function mousewheel(e){
+
+window.addEventListener("mousewheel", function(e){
 
 	cameraactualzoom += (e.wheelDelta || e.detail)*0.005;
 	if(cameraactualzoom < CAMERA_MINIMUM_ZOOM) cameraactualzoom = CAMERA_MINIMUM_ZOOM;
@@ -219,4 +217,4 @@ function mousewheel(e){
 
 	return false;
 
-}
+}, false);
