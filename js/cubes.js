@@ -64,7 +64,7 @@ var cubes = [];
 
 
 
-var s = 0.5;
+var s = 1;
 
 for(i = 0; i < CUBE_COUNT; ++i){
 
@@ -72,7 +72,7 @@ for(i = 0; i < CUBE_COUNT; ++i){
 
 	var material = new THREE.MeshPhongMaterial( { color: 0xFFFFFF*Math.random() } );
 
-	var cube = new Physijs.BoxMesh(geometry, material); //
+	var cube = new Physijs.BoxMesh(geometry, material, 0.1);
 
 
 	cube.castShadow = true;
@@ -80,7 +80,7 @@ for(i = 0; i < CUBE_COUNT; ++i){
 
 
 	cube.position.set(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
-	cube.position.multiplyScalar(Math.pow(Math.random(), 1.5) * MAXIMUM_DISTANCE_FROM_CENTER);
+	cube.position.multiplyScalar(Math.pow(Math.random(), 1) * MAXIMUM_DISTANCE_FROM_CENTER);
 
 	cube.rotation.x = Math.random(2*Math.PI);
 	cube.rotation.y = Math.random(2*Math.PI);
@@ -145,6 +145,8 @@ function render(){ //three.js
 	camera.rotation.y += (intendedcamera.rotation.y - camera.rotation.y) * 0.01;
 
 
+	if(intendedcamera.rotation.x > Math.PI) intendedcamera.rotation.x = Math.PI;
+	else if(intendedcamera.rotation.x < -Math.PI) intendedcamera.rotation.x = -Math.PI;
 
 
 
