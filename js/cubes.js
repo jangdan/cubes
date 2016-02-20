@@ -45,6 +45,7 @@ intendedcamera.rotation.copy(camera.rotation);
 
 
 
+
 var renderer = new THREE.WebGLRenderer( { antialias: false, alpha: false } );
 
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -144,8 +145,6 @@ function render(){ //three.js
 	camera.rotation.y += (intendedcamera.rotation.y - camera.rotation.y) * 0.01;
 
 
-	if(camera.rotation.x > Math.PI) camera.rotation.x = Math.PI*2;
-	else if(camera.rotation.x < -Math.PI) camera.rotation.x = -Math.PI;
 
 
 
