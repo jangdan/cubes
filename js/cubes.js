@@ -32,11 +32,14 @@ scene.addEventListener("update", update);
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2*MAXIMUM_DISTANCE_FROM_CENTER);
 
 
-var cameraactualzoom = camera.zoom;
+var intendedcamera = {
 
-var cameraactualrotation = new THREE.Vector3();
-cameraactualrotation.copy(camera.rotation);
+	zoom: camera.zoom,
+	rotation: new THREE.Vector3()
 
+}
+
+intendedcamera.rotation.copy(camera.rotation);
 
 
 
@@ -131,12 +134,21 @@ function render(){ //three.js
 	requestAnimationFrame(render);
 
 
-	camera.zoom += (cameraactualzoom - camera.zoom) * 0.1;
 
-	camera.rotation.x += (cameraactualrotation.x - camera.rotation.x) * 0.01;
-	camera.rotation.y += (cameraactualrotation.y - camera.rotation.y) * 0.01;
+	camera.zoom += (intendedcamera.zoom - camera.zoom) * 0.1;
+
+
+	camera.rotation.x += (intendedcamera.rotation.x - camera.rotation.x) * 0.01;
+	camera.rotation.y += (intendedcamera.rotation.y - camera.rotation.y) * 0.01;
+
+
+	if(camera.rotation.x > Math.PI) camera.rotation.x = Math.PI*2;
+	else if(camera.rotation.x < -Math.PI) camera.rotation.x = -Math.PI;
+
+
 
 	camera.updateProjectionMatrix();
+
 
 
 	renderer.render(scene, camera);
@@ -198,8 +210,8 @@ window.addEventListener("resize", function(e){
 
 window.addEventListener("mousemove", function(e){
 
-	cameraactualrotation.y = -((e.clientX)/window.innerWidth - 0.5)*2*Math.PI;
-	cameraactualrotation.x = -((e.clientY)/window.innerHeight - 0.5)*Math.PI;
+	intendedcamera.rotation.x = (window.innerHeight/2 - e.clientY)*0.005;
+	intendedcamera.rotation.y = (window.innerWidth/2 - e.clientX)*0.005;
 	
 }, false);
 
@@ -209,9 +221,11 @@ window.addEventListener("mousemove", function(e){
 
 window.addEventListener("mousewheel", function(e){
 
-	cameraactualzoom += (e.wheelDelta || e.detail)*0.005;
-	if(cameraactualzoom < CAMERA_MINIMUM_ZOOM) cameraactualzoom = CAMERA_MINIMUM_ZOOM;
-	else if(cameraactualzoom > CAMERA_MAXIMUM_ZOOM) cameraactualzoom = CAMERA_MAXIMUM_ZOOM;
+	intendedcamera.zoom += (e.wheelDelta || e.detail)*0.005;
+
+	if(intendedcamera.zoom < CAMERA_MINIMUM_ZOOM) intendedcamera.zoom = CAMERA_MINIMUM_ZOOM;
+	else if(intendedcamera.zoom > CAMERA_MAXIMUM_ZOOM) intendedcamera.zoom = CAMERA_MAXIMUM_ZOOM;
+
 
 	return false;
 
