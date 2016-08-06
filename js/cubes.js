@@ -206,8 +206,8 @@ function update(){ //physijs
 		var Gimass = G*cubes[i].mass;
 
 
-
 		for(j = i + 1; j < cubes.length; ++j){
+			
 			var f = new THREE.Vector3();
 
 			f.subVectors(iposition, cubes[j].position);
