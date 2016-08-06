@@ -10,7 +10,7 @@ var CAMERA_MINIMUM_ZOOM = 1;
 var CAMERA_MAXIMUM_ZOOM = 100;
 
 
-var CUBE_COUNT = 25;
+var CUBE_COUNT = 250;
 
 var MAXIMUM_DISTANCE_FROM_CENTER = 30;
 
@@ -21,7 +21,6 @@ var MAXIMUM_DISTANCE_FROM_CENTER = 30;
 var scene = new Physijs.Scene( { reportsize: CUBE_COUNT } );
 
 scene.setGravity(new THREE.Vector3(0, 0, 0));
-
 
 scene.addEventListener("update", update);
 
@@ -207,8 +206,8 @@ function update(){ //physijs
 		var Gimass = G*cubes[i].mass;
 
 
-		for(j = i+1; j < cubes.length; ++j){
 
+		for(j = i + 1; j < cubes.length; ++j){
 			var f = new THREE.Vector3();
 
 			f.subVectors(iposition, cubes[j].position);
